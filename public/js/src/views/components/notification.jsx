@@ -1,5 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
+import Snackbar from 'material-ui/Snackbar';
 import {instance as app} from 'app'
 
 export default class Notification extends React.Component {
@@ -17,21 +18,38 @@ export default class Notification extends React.Component {
 
     static get defaultProps() {
         return {
-            notificationDuration: 2500
+            notificationDuration: 2500,
+            animationOutDuration: 400,
+            animationInDuration: 400
         }
     }
 
-    show(message) {
-        this.setState({
-            text: message,
-            isVisible: true
+    notifyUser(message) {
+        return new Promise((resolve, reject) => {
+            this.setState({
+                text: message,
+                isVisible: true
+            });
+
+            setTimeout(() => {
+                this.hide()
+                    .then(resolve, reject);
+            }, this.props.notificationDuration);
         });
+
     }
 
     hide() {
-        this.setState({
-            isVisible: false
-        })
+        return new Promise((resolve, reject) => {
+            this.setState({
+                isVisible: false
+            });
+
+            setTimeout(() => {
+                resolve();
+            }, this.props.animationOutDuration)
+        });
+
     }
 
     isVisible() {
@@ -43,28 +61,18 @@ export default class Notification extends React.Component {
     }
 
     componentDidMount() {
-        const self = this;
-        this.notifications.onUnread(message => {
-            debugger;
-            if (!message) return;
-            self.show(message);
-            setTimeout(() => {
-                self.hide();
-                self.notifications.dismiss();
-            }, self.props.notificationDuration);
+        this.notifications.onUnread(messages => {
+            messages.reduce((messageQueue, message) => {
+                    return messageQueue.then(() => {
+                        return this.notifyUser(message)
+                    });
+                },
+                Promise.resolve())
+                .then(this.notifications.dismissAll);
         })
     }
 
     render() {
-        const notificationClassNames = classNames({
-            'notification': true,
-            'notification--visible': this.isVisible(),
-            [`notification--${this.getType()}`]: true
-        });
-        return (
-            <div className={notificationClassNames}>
-                <p>{this.state.text}</p>
-            </div>
-        )
+        return (<Snackbar open={this.state.isVisible} message={this.state.text} />);
     }
 }

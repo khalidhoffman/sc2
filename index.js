@@ -35,7 +35,7 @@ class SoundCloudServer {
 
         this.app.use(logger('dev'));
         this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({extended: false}));
+        this.app.use(bodyParser.urlencoded({extended: true}));
         this.app.use(cookieParser());
         this.app.use(express.static(path.join(process.cwd(), 'public')));
 

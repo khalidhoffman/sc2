@@ -1,14 +1,12 @@
 import {get} from 'lodash';
+import {Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/debounce';
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/buffer';
-import 'rxjs/add/operator/skipWhile';
-import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/combineLatest';
-import 'rxjs/add/operator/exhaust';
 
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 class Store {
     constructor(defaultState = {}) {
@@ -63,7 +61,7 @@ class Store {
             .subscribe({next: callback})
     }
 
-    getObservable(path) {
+    getStateObservable(path) {
         return path
             ?
             this.observable.distinctUntilChanged((prev, state) => Store.compare(prev, state, path))
@@ -71,7 +69,7 @@ class Store {
             this.observable;
     }
 
-    getReducedObservable(path){
+    getObservable(path){
         let reducedObservable;
         if (path){
             reducedObservable = this.observable

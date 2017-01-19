@@ -17,6 +17,10 @@ class APIRouter extends Router {
             this.auth.verify(),
             this.soundcloud.onFetchPlayLists());
 
+        this.router.post('/playlist',
+            this.auth.verify(),
+            this.soundcloud.onUpdatePlayList());
+
         this.router.post('/query/playlist',
             this.auth.verify(),
             this.soundcloud.onFetchPlayList());

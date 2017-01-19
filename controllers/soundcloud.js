@@ -13,6 +13,7 @@ class SoundCloudDataController {
         const userMeta = req.session.passport.user;
         this.cache[userMeta.id] = this.cache[userMeta.id] || new SoundCloud.User({
                 clientId: config.SOUNDCLOUD_CLIENT_ID,
+                accessToken: userMeta.accessToken,
                 meta: userMeta._json
             });
 
@@ -20,11 +21,25 @@ class SoundCloudDataController {
     }
 
     onFetchUser() {
-        const self  = this;
+        const self = this;
         return function (req, res, next) {
             self.getUser(req)
                 .fetchUserMeta()
-                .then((meta) => {res.json(meta)})
+                .then((meta) => {
+                    res.json(meta)
+                })
+                .catch(next);
+        }
+    }
+
+    onUpdatePlayList() {
+        const self = this;
+        return function (req, res, next) {
+            self.getUser(req)
+                .setPlayList(req.body)
+                .then((meta) => {
+                    res.json(meta)
+                })
                 .catch(next);
         }
     }

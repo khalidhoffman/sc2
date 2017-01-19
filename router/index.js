@@ -1,5 +1,5 @@
-const APIRouter = require('./api'),
-    ViewRouter = require('./view'),
+const APIRouter = require('./lib/api'),
+    ViewRouter = require('./lib/view'),
 
     SoundCloudController = require('../controllers/soundcloud'),
     AuthController = require('../controllers/auth');

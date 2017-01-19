@@ -8,7 +8,7 @@ var url = require('url'),
 
 
 module.exports = function () {
-    const callbackURL = config.DOMAIN_URL;
+    const callbackURL = config.PUBLIC_URL;
 
     passport.serializeUser(function (user, done) {
         done(null, user);
@@ -23,6 +23,6 @@ module.exports = function () {
         clientSecret: config.SOUNDCLOUD_CLIENT_SECRET,
         callbackURL: callbackURL
     }, function (accessToken, refreshToken, profile, done) {
-        return done(null, profile);
+        return done(null, Object.assign({accessToken}, profile));
     });
 };

@@ -5,10 +5,17 @@ class NotificationController extends Controller {
     constructor() {
         super(...arguments);
 
+        this.state = {
+            intervalId: null,
+            messages: [],
+            intervalEmitter: null
+        };
+
         const scopedMethods = [
             'queue',
             'onUnread',
-            'dismiss'
+            'dismissOldest',
+            'dismissAll'
         ];
         for (const method of scopedMethods) {
             this[method] = this[method].bind(this);
@@ -20,21 +27,42 @@ class NotificationController extends Controller {
         this.store.setState({messages});
     }
 
-    dismiss() {
+    dismissOldest() {
         this.store.setState({
             messages: this.store.get('messages').slice(1)
         });
     }
 
+    dismissAll() {
+        this.store.setState({
+            messages: []
+        });
+    }
+
+    onNotificationTick() {
+        if (this.state.messages.length > 0) {
+            this.state.intervalEmitter.next(this.state.messages);
+        } else {
+            clearInterval(this.state.intervalId);
+            delete this.state.intervalId;
+        }
+    }
+
     onUnread(callback) {
-        Observable.interval(3000)
-            .map(() => this.store.get('messages'))
-            .skipWhile(messages => {
-                debugger;
-                return messages.length < 1
+        return this.store.getObservable('messages')
+            .mergeMap(messages => {
+                this.state.messages = messages;
+                return Observable.create(intervalEmitter => {
+                    this.state.intervalEmitter = intervalEmitter;
+                    if (!this.state.intervalId) {
+                        this.state.intervalId = setInterval(() => {
+                            this.onNotificationTick();
+                        }, 3000);
+                    }
+                    this.onNotificationTick();
+                });
             })
-            .map(messages => messages[0])
-            .subscribe(callback);
+            .subscribe(callback)
     }
 }
 

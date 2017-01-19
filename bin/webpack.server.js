@@ -13,7 +13,7 @@ webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:4444/', 
 const server = new WebpackServer(webpack(webpackConfig), {
     quiet: false,
     noInfo: false,
-    contentBase: config.DOMAIN_URL,
+    contentBase: config.PUBLIC_URL,
     hot: true,
     filename: path.join(process.cwd(), '/public/js/app.js'),
     setup: function (app) {

@@ -17,6 +17,7 @@
     "express": "~4.13.1",
     "express-session": "^1.14.1",
     "filetype": "^0.1.0",
+    "form-urlencoded": "^0.1.4",
     "iconv": "^2.1.10",
     "id3-writer": "^1.2.2",
     "lodash": "^4.17.4",
@@ -58,7 +59,7 @@
     "react-tap-event-plugin": "^2.0.0",
     "rxjs": "^5.0.3",
     "script-loader": "^0.7.0",
-    "soundcloud": "ssh://localhost:/home/kah8br/nodejs/soundcloud",
+    "soundcloud": "^3.1.2",
     "supertest": "^2.0.1",
     "webpack": "^1.14.0"
   }

@@ -7,7 +7,7 @@ import Controller from './base-controller';
 
 class APIController extends Controller {
 
-    constructor(){
+    constructor() {
         super(...arguments);
 
         const scopedMethods = [
@@ -21,15 +21,15 @@ class APIController extends Controller {
     }
 
     fetchUserData() {
-        var self = this;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject) => {
             $.ajax({
                 method: 'GET',
                 url: '/api/user',
+                dataType: 'json',
                 complete: (res) => {
                     if (res.status < 400) {
                         const userMeta = res.responseJSON;
-                        self.store.setState({
+                        this.store.setState({
                             user: userMeta
                         });
                         resolve(userMeta)
@@ -45,18 +45,18 @@ class APIController extends Controller {
     }
 
     fetchPlayLists() {
-        var self = this;
-        return new Promise((resolve, reject)=>{
+        return new Promise((resolve, reject) => {
             $.ajax({
                 method: 'GET',
                 url: '/api/playlists',
+                dataType: 'json',
                 complete: res => {
                     if (res.status < 400) {
                         const userPlaylists = res.responseJSON.map(playlistMeta => {
-                            return new PlayList({meta: playlistMeta})
+                            return new PlayList(playlistMeta)
                         });
-                        self.store.setState({
-                            cachedPlayLists: self.store.get('cachedPlayLists').concat(userPlaylists),
+                        this.store.setState({
+                            cachedPlayLists: this.store.get('cachedPlayLists').concat(userPlaylists),
                             userPlayLists: userPlaylists
                         });
                         resolve(userPlaylists);
@@ -75,9 +75,8 @@ class APIController extends Controller {
      * @param {String} [playListName]
      */
     fetchPlayList(playListName) {
-        var self = this;
-        return new Promise((resolve, reject)=>{
-            const cachedPlayList = find(self.store.get('cachedPlayLists'), (playListMeta) => {
+        return new Promise((resolve, reject) => {
+            const cachedPlayList = find(this.store.get('cachedPlayLists'), (playListMeta) => {
                 return playListName == playListMeta.title
             });
             if (cachedPlayList) {
@@ -86,14 +85,15 @@ class APIController extends Controller {
                 $.ajax({
                     method: 'POST',
                     url: '/api/query/playlist',
-                    soundcloud: {
+                    body: JSON.stringify({
                         title: playListName
-                    },
+                    }),
+                    dataType: 'json',
                     complete: (res) => {
                         if (res.status < 400) {
-                            const queriedPlayList = new PlayList({meta: res.responseJSON});
-                            self.store.setState({
-                                cachedPlayLists: self.store.get('cachedPlayLists').concat([queriedPlayList])
+                            const queriedPlayList = new PlayList(res.responseJSON);
+                            this.store.setState({
+                                cachedPlayLists: this.store.get('cachedPlayLists').concat([queriedPlayList])
                             });
                             resolve(queriedPlayList);
                         } else {
@@ -104,6 +104,33 @@ class APIController extends Controller {
                     }
                 })
             }
+        });
+    }
+
+    /**
+     *
+     * @param {SoundCollection} playList
+     */
+    updatePlayList(playList) {
+        return new Promise((resolve, reject) => {
+            debugger;
+            $.ajax({
+                method: 'POST',
+                url: '/api/playlist',
+                data: playList.toJSON(),
+                dataType: 'json',
+                complete: (res) => {
+                    debugger;
+                    if (res.status < 400) {
+                        console.log('set playlist %o', res.responseJSON);
+                        resolve();
+                    } else {
+                        const err = new Error(`server responded with: ${res.status}`);
+                        console.error(err);
+                        reject(err);
+                    }
+                }
+            });
         });
     }
 

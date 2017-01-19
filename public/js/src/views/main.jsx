@@ -69,11 +69,11 @@ class MainView extends Component {
                 return [
                     {
                         label: 'Help',
-                        callback: this.showHelp
+                        callback: this.router.showHelp
                     },
                     {
                         label: 'Refresh',
-                        callback: this.refresh
+                        callback: this.router.refresh
                     },
                     {
                         label: (this.api.isLoggedIn()) ? 'Sign Out' : 'Sign In',
@@ -177,6 +177,13 @@ class MainView extends Component {
         this.setState({
             activePlayList: this.state.activePlayList
         });
+        this.api.updatePlayList(this.state.activePlayList)
+            .then(() => {
+                this.notifications.queue(`Updated '${this.state.activePlayList.getTitle()}'`)
+            })
+            .catch(() => {
+                this.notifications.queue('Failed to update playlist')
+            })
     }
 
     componentDidMount() {
@@ -198,7 +205,6 @@ class MainView extends Component {
 
         this.store.getObservable('searchText')
             .debounce(() => interval(1000))
-            .map(state => state.searchText)
             .subscribe(name => {
                 if (!name) return;
                 // TODO investigate why this scope is not of MainView Class
@@ -236,18 +242,14 @@ class MainView extends Component {
                     'loading-view': true,
                     'loading-view--active': this.isBusy()
                 });
-                return (
-                    <div className={loadingViewClass}>
-                        <CircularProgress size={80} thickness={5}/>
-                    </div>
-                );
+                return (<div className={loadingViewClass}>
+                    <CircularProgress size={80} thickness={5}/>
+                </div>);
                 break;
             case 'list':
             default:
                 if (this.state.activePlayList) {
-                    return (
-                        <SortablePlayListView onSortEnd={this.onSortEnd} playList={this.state.activePlayList}/>
-                    );
+                    return (<SortablePlayListView onSortEnd={this.onSortEnd} playList={this.state.activePlayList}/>);
                 } else {
                     return (<center><h3>Welcome</h3></center>)
                 }
@@ -256,19 +258,45 @@ class MainView extends Component {
 
     render() {
 
+        const HeaderDropDown = () => {
+            return (<AppBarMenu actions={this.getActions('menu')}/>)
+        };
+
+        const Header = () => {
+            return (<AppBar title="SC2"
+                            onLeftIconButtonTouchTap={this.toggleDrawer}
+                            iconElementRight={<HeaderDropDown/>}/>);
+
+        };
+
+        const MainView = () => {
+            return this.isBusy() ? this.getView('loading') : this.getView('default')
+        };
+
+        const DrawerItem = (props) => {
+            return (<MenuItem {...props} >{props.title}</MenuItem>);
+        };
+
+        const SideDrawer = () => {
+            return (<Drawer docked={false} open={this.state.isDrawerOpen} onRequestChange={this.onDrawerEvent}>
+                {this.state.playLists.map((playList, index) => {
+                    const drawerItemProps = {
+                        key: index,
+                        onClick: () => this.onPlayListDrawerClick(playList),
+                        title: playList.getTitle()
+                    };
+                    return (<DrawerItem {...drawerItemProps} />);
+                })}
+            </Drawer>);
+        };
+
         return (
             <MuiThemeProvider>
                 <div>
-                    <AppBar title="SC2" onLeftIconButtonTouchTap={this.toggleDrawer}
-                            iconElementRight={<AppBarMenu actions={this.getActions('menu')}/>}/>
+                    <Header />
                     <SearchBar onSearch={this.onSearch}/>
-                    {this.isBusy() ? this.getView('loading') : this.getView('default')}
-                    <Drawer docked={false} open={this.state.isDrawerOpen} onRequestChange={this.onDrawerEvent}>{
-                        this.state.playLists.map((playList, index) => {
-                            return (<MenuItem key={index}
-                                              onClick={() => this.onPlayListDrawerClick(playList)}>{playList.getTitle()}</MenuItem>)
-                        })
-                    }</Drawer>
+                    <MainView />
+                    <SideDrawer/>
                     <Notification/>
                 </div>
             </MuiThemeProvider>
