@@ -1,6 +1,6 @@
 const _ = require('lodash'),
 
-    SoundCloud = require('soundcloud'),
+    SoundCloud = require('soundcloud-lib'),
 
     config = require('../config');
 

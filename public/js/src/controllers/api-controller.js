@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import {find} from 'lodash';
 
-import {SoundCollection as PlayList} from 'soundcloud'
+import {SoundCollection as PlayList} from 'soundcloud-lib'
 
 import Controller from './base-controller';
 
