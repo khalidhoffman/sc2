@@ -57460,7 +57460,7 @@
 
 	var _lodash = __webpack_require__(181);
 
-	var _soundcloud = __webpack_require__(527);
+	var _soundcloudLib = __webpack_require__(527);
 
 	var _baseController = __webpack_require__(541);
 
@@ -57550,7 +57550,7 @@
 	                    complete: function complete(res) {
 	                        if (res.status < 400) {
 	                            var userPlaylists = res.responseJSON.map(function (playlistMeta) {
-	                                return new _soundcloud.SoundCollection(playlistMeta);
+	                                return new _soundcloudLib.SoundCollection(playlistMeta);
 	                            });
 	                            _this3.store.setState({
 	                                cachedPlayLists: _this3.store.get('cachedPlayLists').concat(userPlaylists),
@@ -57593,7 +57593,7 @@
 	                        dataType: 'json',
 	                        complete: function complete(res) {
 	                            if (res.status < 400) {
-	                                var queriedPlayList = new _soundcloud.SoundCollection(res.responseJSON);
+	                                var queriedPlayList = new _soundcloudLib.SoundCollection(res.responseJSON);
 	                                _this4.store.setState({
 	                                    cachedPlayLists: _this4.store.get('cachedPlayLists').concat([queriedPlayList])
 	                                });
@@ -67929,7 +67929,6 @@
 	        return Promise.reject(err);
 	    }
 
-
 	    /**
 	     *
 	     * @returns {Promise}
@@ -67979,6 +67978,7 @@
 	     */
 	    _updatePlayList(playList) {
 	        return new Promise((resolve, reject) => {
+
 	            const accessibleProps = ['title', 'tracks'],
 	                playListMeta = playList instanceof SoundFilePlayList ? playList.toJSON() : playList,
 	                formData = {
@@ -67986,8 +67986,8 @@
 	                    format: 'json',
 	                    client_id: this._config.clientId
 	                },
-	                encodedFormData = form.encode(formData),
-	                scPlayListAPIURL = `https://api.soundcloud.com/playlists`;
+	                encodedFormData = form.encode(formData);
+
 	            request.put(playListMeta.uri)
 	                .type('form')
 	                .query({
@@ -68009,8 +68009,8 @@
 	     * @returns {Promise}
 	     */
 	    fetchUserMeta() {
-	        let self = this;
 	        return new Promise((resolve, reject) => {
+
 	            if (!this.isLoggedIn()) {
 	                request.get('http://api.soundcloud.com/resolve/')
 	                    .query({
@@ -70985,7 +70985,7 @@
 	        'setPlayList', 'showLoading', 'hideLoading', 'toggleDrawer',
 
 	        //events
-	        'onSearch', 'onSortEnd', 'onPlayListDrawerClick', 'onDrawerEvent'];
+	        'onSearch', 'onSortEnd', 'onPlayListDrawerItemClick', 'onDrawerEvent'];
 	        var _iteratorNormalCompletion = true;
 	        var _didIteratorError = false;
 	        var _iteratorError = undefined;
@@ -71109,7 +71109,7 @@
 	            }
 	        }
 	    }, {
-	        key: 'onPlayListDrawerClick',
+	        key: 'onPlayListDrawerItemClick',
 	        value: function onPlayListDrawerClick(playList) {
 	            console.log('setting activePlayList: %o', playList);
 	            this.store.setState({
@@ -97480,11 +97480,12 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var ArtWork = _react2.default.createElement('div', { className: 'sound__artwork',
+	                style: { backgroundImage: 'url(\'' + (this.props.sound.get('artwork_url') || this.props.artwork) + '\'' } });
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'sound', ref: this.onBindNode },
-	                _react2.default.createElement('div', { className: 'sound__artwork',
-	                    style: { backgroundImage: 'url(\'' + (this.props.sound.get('artwork_url') || this.props.artwork) + '\'' } }),
+	                ArtWork,
 	                _react2.default.createElement(
 	                    'span',
 	                    { className: 'sound__title' },

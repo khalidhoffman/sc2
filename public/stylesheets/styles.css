@@ -1,0 +1,128 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500");
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+a {
+  color: #00b7ff;
+}
+#root div {
+  overflow: hidden;
+}
+.loading-view {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.5);
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  -ms-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-align-items: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  height: 100vh;
+}
+.loading-view.loading-view--active {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.notification {
+  -webkit-transition-property: background-color, transform();
+  transition-property: background-color, transform();
+  -webkit-transition-duration: 1000ms;
+  transition-duration: 1000ms;
+  -webkit-transition-duration: 1000ms, 400ms;
+  transition-duration: 1000ms, 400ms;
+  border-radius: 0.625em;
+  position: fixed;
+  bottom: 0.75em;
+  left: 0.75em;
+  padding: 1em;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  background-color: rgba(0,0,0,0.5);
+  color: #fff;
+  text-align: center;
+  z-index: 100;
+  -webkit-transform: translate3d(0, 200%, 0);
+  -ms-transform: translate3d(0, 200%, 0);
+  transform: translate3d(0, 200%, 0);
+}
+.notification--error {
+  background-color: rgba(255,0,0,0.5);
+}
+.notification--visible {
+  -webkit-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.playList {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.sound {
+  overflow: hidden;
+  position: relative;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flex;
+  display: inline-flex;
+  -webkit-flex: 1 1 7.5em;
+  -ms-flex: 1 1 7.5em;
+  flex: 1 1 7.5em;
+  height: 7.5em;
+  padding: 0.75em;
+}
+.sound .sound__artwork {
+  position: relative;
+  overflow: hidden;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.sound .sound__artwork:before {
+  content: "";
+  position: absolute;
+  background-repeat: repeat-x;
+  display: block;
+  bottom: -1px;
+  left: -1px;
+  right: -1px;
+  top: -1px;
+  background-position: center;
+  background-color: rgba(0,0,0,0.5);
+}
+.sound .sound__artwork > * {
+  position: relative;
+}
+.sound .sound__title {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  color: #fff;
+}

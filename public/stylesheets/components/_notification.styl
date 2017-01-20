@@ -1,0 +1,19 @@
+
+.notification
+  long-transition(background-color, transform)
+  transition-duration: $duration-transition-long-ms, $duration-transition-default-ms;
+  border-radius em-auto(10)
+  position fixed
+  bottom em-auto(12)
+  left em-auto(12)
+  padding 1em
+  box-sizing content-box
+  background-color transparentify($color-black, 50%);
+  color: $color-white;
+  text-align center
+  z-index 100
+  transform translate3d(0, 200%, 0);
+  &--error
+    background-color transparentify($color-red, 50%);
+  &--visible
+    transform translate3d(0, 0, 0);

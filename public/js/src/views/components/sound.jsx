@@ -39,11 +39,13 @@ class Sound extends React.Component {
     }
 
     render() {
-        return (<div className="sound" ref={this.onBindNode}>
-            <div className='sound__artwork'
-                 style={{backgroundImage: `url('${this.props.sound.get('artwork_url') || this.props.artwork}'`}}/>
-            <span className="sound__title">{this.props.sound.getTitle()}</span>
-        </div>)
+        const ArtWork = <div className='sound__artwork'
+                 style={{backgroundImage: `url('${this.props.sound.get('artwork_url') || this.props.artwork}'`}}/>;
+        return (
+            <div className="sound" ref={this.onBindNode}>
+                {ArtWork}
+                <span className="sound__title">{this.props.sound.getTitle()}</span>
+            </div>)
     }
 }
 

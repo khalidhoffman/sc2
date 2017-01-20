@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "es2015",
+    "react"
+  ],
+  "plugins": [
+    ["module-resolver", {
+      "root": [
+        "./",
+        "./public/js/src"
+      ]
+    }]
+  ]
+}

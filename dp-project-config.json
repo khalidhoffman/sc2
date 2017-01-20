@@ -1,0 +1,29 @@
+{
+  "name": "sc2",
+  "workingDir": "default",
+  "tasks" : [
+    {
+      "name" : "pug-beautify",
+      "input": "views/"
+    },
+    {
+      "name" : "js",
+      "input": "js/src/",
+      "ignore" : ["**/node_modules/**", "**/vendors/**"]
+    },
+    {
+      "name" : "webpack",
+      "input": "public/js/src/webpack.config.js"
+    },
+    {
+      "name" : "stylus-bem",
+      "input": "public/stylesheets/",
+      "output": "public/stylesheets/"
+    },
+    {
+      "name": "css",
+      "input": "stylesheets/",
+      "output": "stylesheets/"
+    }
+  ]
+}

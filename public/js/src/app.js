@@ -5,6 +5,7 @@ import Router from './router';
 import Store from 'stores/main';
 import APIController from 'controllers/api-controller';
 import NotificationController from 'controllers/notification-controller';
+import UIController from 'controllers/ui-controller';
 import MainView from "views/main";
 
 class App {
@@ -21,6 +22,7 @@ class App {
         this.store = new Store(defaults);
         this.api = new APIController(this);
         this.notifications = new NotificationController(this);
+        this.ui = new UIController(this);
     }
 
     render(DOMNode){

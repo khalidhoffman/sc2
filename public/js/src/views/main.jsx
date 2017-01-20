@@ -51,9 +51,8 @@ class MainView extends Component {
             'toggleDrawer',
 
             //events
-            'onSearch',
             'onSortEnd',
-            'onPlayListDrawerClick',
+            'onPlayListDrawerItemClick',
             'onDrawerEvent'
         ];
         for (var method of scopedMethods) {
@@ -146,30 +145,12 @@ class MainView extends Component {
         }
     }
 
-    onPlayListDrawerClick(playList) {
+    onPlayListDrawerItemClick(playList) {
         console.log('setting activePlayList: %o', playList);
         this.store.setState({
             activePlayList: playList
         });
         this.toggleDrawer();
-    }
-
-    onSearch(searchText) {
-        this.store.setState({
-            searchText: searchText
-        });
-        if (searchText) {
-            this.api.fetchPlayList(searchText)
-                .then(playLists => {
-                    if (!playLists[0]) return Promise.reject();
-                    this.setState({
-                        activePlayList: playLists[0]
-                    })
-                })
-                .catch(() => {
-                    this.notifications.queue(`Could not find '${searchText}'`);
-                })
-        }
     }
 
     onSortEnd({oldIndex, newIndex}) {
@@ -242,9 +223,10 @@ class MainView extends Component {
                     'loading-view': true,
                     'loading-view--active': this.isBusy()
                 });
-                return (<div className={loadingViewClass}>
-                    <CircularProgress size={80} thickness={5}/>
-                </div>);
+                return (
+                    <div className={loadingViewClass}>
+                        <CircularProgress size={80} thickness={5}/>
+                    </div>);
                 break;
             case 'list':
             default:
@@ -263,9 +245,10 @@ class MainView extends Component {
         };
 
         const Header = () => {
-            return (<AppBar title="SC2"
-                            onLeftIconButtonTouchTap={this.toggleDrawer}
-                            iconElementRight={<HeaderDropDown/>}/>);
+            return (
+                <AppBar onLeftIconButtonTouchTap={this.toggleDrawer}
+                        iconElementRight={<HeaderDropDown/>}
+                        title="SC2"/>);
 
         };
 
@@ -278,29 +261,29 @@ class MainView extends Component {
         };
 
         const SideDrawer = () => {
-            return (<Drawer docked={false} open={this.state.isDrawerOpen} onRequestChange={this.onDrawerEvent}>
-                {this.state.playLists.map((playList, index) => {
-                    const drawerItemProps = {
-                        key: index,
-                        onClick: () => this.onPlayListDrawerClick(playList),
-                        title: playList.getTitle()
-                    };
-                    return (<DrawerItem {...drawerItemProps} />);
-                })}
-            </Drawer>);
+            return (
+                <Drawer docked={false} open={this.state.isDrawerOpen} onRequestChange={this.onDrawerEvent}>
+                    {this.state.playLists.map((playList, index) => {
+                        const drawerItemProps = {
+                            key: index,
+                            onClick: () => this.onPlayListDrawerItemClick(playList),
+                            title: playList.getTitle()
+                        };
+                        return (<DrawerItem {...drawerItemProps} />);
+                    })}
+                </Drawer>)
         };
 
         return (
             <MuiThemeProvider>
                 <div>
                     <Header />
-                    <SearchBar onSearch={this.onSearch}/>
+                    <SearchBar onSearch={this.ui.onSearch}/>
                     <MainView />
                     <SideDrawer/>
                     <Notification/>
                 </div>
-            </MuiThemeProvider>
-        )
+            </MuiThemeProvider>)
     }
 }
 

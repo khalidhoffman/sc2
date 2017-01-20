@@ -1,0 +1,3 @@
+[submodule "public/js/src/vendor/LiveJS"]
+	path = public/js/src/vendor/LiveJS
+	url = https://github.com/Q42/LiveJS.git

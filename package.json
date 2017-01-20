@@ -59,7 +59,7 @@
     "react-tap-event-plugin": "^2.0.0",
     "rxjs": "^5.0.3",
     "script-loader": "^0.7.0",
-    "soundcloud-lib": "git+https://github.com/khalidhoffman/soundcloud-lib.git",
+    "soundcloud-lib": "git+https://github.com/khalidhoffman/soundcloud-lib.git#v1/wip",
     "supertest": "^2.0.1",
     "webpack": "^1.14.0"
   }
