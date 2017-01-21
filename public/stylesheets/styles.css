@@ -7,6 +7,9 @@ body {
 a {
   color: #00b7ff;
 }
+#root {
+  padding-top: 64px;
+}
 #root div {
   overflow: hidden;
 }

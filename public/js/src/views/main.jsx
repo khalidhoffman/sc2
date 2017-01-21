@@ -13,6 +13,8 @@ import CircularProgress from 'material-ui/CircularProgress'
 import Drawer from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
 
+import {SoundCollection as PlayList} from 'soundcloud-lib'
+
 import {instance as app} from '../app'
 
 import Notification from './components/notification'
@@ -35,6 +37,7 @@ class MainView extends Component {
         this.api = app.api;
         this.router = app.router;
         this.notifications = app.notifications;
+        this.ui = app.ui;
 
         const scopedMethods = [
 
@@ -51,7 +54,7 @@ class MainView extends Component {
             'toggleDrawer',
 
             //events
-            'onSortEnd',
+            'onSoundMoved',
             'onPlayListDrawerItemClick',
             'onDrawerEvent'
         ];
@@ -59,112 +62,6 @@ class MainView extends Component {
             this[method] = this[method].bind(this);
         }
 
-    }
-
-    /* State Getters */
-    getActions(namespace) {
-        switch (namespace) {
-            case 'menu':
-                return [
-                    {
-                        label: 'Help',
-                        callback: this.router.showHelp
-                    },
-                    {
-                        label: 'Refresh',
-                        callback: this.router.refresh
-                    },
-                    {
-                        label: (this.api.isLoggedIn()) ? 'Sign Out' : 'Sign In',
-                        callback: (this.api.isLoggedIn()) ? this.router.logout : this.router.login
-                    }
-                ];
-
-            default:
-                return [];
-        }
-    }
-
-    /**
-     *
-     * @param {String} [playListName]
-     */
-    filterVisibleSongs(playListName) {
-        const playListData = find(this.state.playLists, (playList) => {
-            return playList.get('title') === playListName;
-        });
-        return playListData ? playListData.getSounds() : [];
-    }
-
-    /**
-     *
-     * @param {PlayList} playList
-     */
-    setPlayList(playList) {
-        this.setState({
-            activePlayList: playList
-        })
-    }
-
-    isBusy() {
-        return this.state.loadingQueue > 0
-    }
-
-    showLoading() {
-        this.setState({
-            loadingQueue: this.state.loadingQueue + 1
-        });
-        return Promise.resolve();
-    }
-
-    hideLoading() {
-        this.setState({
-            loadingQueue: this.state.loadingQueue - 1
-        });
-        return Promise.resolve();
-    }
-
-    toggleDrawer() {
-        console.log('toggling drawer');
-        this.setState({
-            isDrawerOpen: !this.state.isDrawerOpen
-        })
-    }
-
-    onDrawerEvent(currentDrawerState, event) {
-        console.log('drawer event: %o', event);
-        switch (event) {
-            case 'clickaway':
-            case 'escape':
-                if (this.state.isDrawerOpen) {
-                    this.toggleDrawer();
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    onPlayListDrawerItemClick(playList) {
-        console.log('setting activePlayList: %o', playList);
-        this.store.setState({
-            activePlayList: playList
-        });
-        this.toggleDrawer();
-    }
-
-    onSortEnd({oldIndex, newIndex}) {
-        this.state.activePlayList.setSounds(arrayMove(this.state.activePlayList.getSounds(), oldIndex, newIndex));
-        this.setState({
-            activePlayList: this.state.activePlayList
-        });
-        this.api.updatePlayList(this.state.activePlayList)
-            .then(() => {
-                this.notifications.queue(`Updated '${this.state.activePlayList.getTitle()}'`)
-            })
-            .catch(() => {
-                this.notifications.queue('Failed to update playlist')
-            })
     }
 
     componentDidMount() {
@@ -211,10 +108,134 @@ class MainView extends Component {
             .then(this.hideLoading)
             .catch(err => {
                 this.hideLoading();
-                this.notifications.queue('Could not fetch your information', err);
+                this.notifications.queue('Please sign in', err);
             });
     }
 
+    /**
+     *
+     * @param {String} namespace
+     */
+    getActions(namespace) {
+        switch (namespace) {
+            case 'header-dropdown':
+            case 'menu':
+                return [
+                    {
+                        label: 'Help',
+                        callback: this.router.showHelp
+                    },
+                    {
+                        label: 'Refresh',
+                        callback: this.router.refresh
+                    },
+                    {
+                        label: (this.api.isLoggedIn()) ? 'Sign Out' : 'Sign In',
+                        callback: (this.api.isLoggedIn()) ? this.router.logout : this.router.login
+                    }
+                ];
+
+            default:
+                return [];
+        }
+    }
+
+    /**
+     *
+     * @param {PlayList} playList
+     */
+    setPlayList(playList) {
+        this.setState({
+            activePlayList: playList
+        })
+    }
+
+    isBusy() {
+        return this.state.loadingQueue > 0
+    }
+
+    /**
+     *
+     * @param {String} [playListName]
+     */
+    filterVisibleSongs(playListName) {
+        const playListData = find(this.state.playLists, (playList) => {
+            return playList.get('title') === playListName;
+        });
+        return playListData ? playListData.getSounds() : [];
+    }
+
+    showLoading() {
+        this.setState({
+            loadingQueue: this.state.loadingQueue + 1
+        });
+        return Promise.resolve();
+    }
+
+    hideLoading() {
+        this.setState({
+            loadingQueue: this.state.loadingQueue - 1
+        });
+        return Promise.resolve();
+    }
+
+    toggleDrawer() {
+        console.log('toggling drawer');
+        this.setState({
+            isDrawerOpen: !this.state.isDrawerOpen
+        })
+    }
+
+    onDrawerEvent(currentDrawerState, event) {
+        console.log('drawer event: %o', event);
+        switch (event) {
+            case 'clickaway':
+            case 'escape':
+                if (this.state.isDrawerOpen) {
+                    this.toggleDrawer();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     *
+     * @param {SoundCollection} playList
+     */
+    onPlayListDrawerItemClick(playList) {
+        console.log('setting activePlayList: %o', playList);
+        this.store.setState({
+            activePlayList: playList
+        });
+        this.toggleDrawer();
+    }
+
+    onSoundMoved({oldIndex, newIndex}) {
+        // TODO probably shouldn't edit activePlayList in state
+        this.state.activePlayList.setSounds(arrayMove(orderedPlaylist.getSounds(), oldIndex, newIndex));
+        this.setPlayList(this.state.activePlayList);
+        this.api.updatePlayList(this.state.activePlayList)
+            .then(() => {
+                this.notifications.queue(`Updated '${this.state.activePlayList.getTitle()}'`)
+            })
+            .catch((err) => {
+                switch(err.code){
+                    case 413:
+                        this.notifications.queue('Playlist too large to update');
+                        break;
+                    default:
+                        this.notifications.queue(`Failed to update '${this.state.activePlayList.getTitle()}'`);
+                        break;
+                }
+            })
+    }
+
+    /**
+     *
+     * @param {String} viewName
+     */
     getView(viewName) {
         switch (viewName) {
             case 'loading':
@@ -227,11 +248,10 @@ class MainView extends Component {
                     <div className={loadingViewClass}>
                         <CircularProgress size={80} thickness={5}/>
                     </div>);
-                break;
             case 'list':
             default:
                 if (this.state.activePlayList) {
-                    return (<SortablePlayListView onSortEnd={this.onSortEnd} playList={this.state.activePlayList}/>);
+                    return (<SortablePlayListView onSortEnd={this.onSoundMoved} playList={this.state.activePlayList}/>);
                 } else {
                     return (<center><h3>Welcome</h3></center>)
                 }
@@ -241,19 +261,25 @@ class MainView extends Component {
     render() {
 
         const HeaderDropDown = () => {
-            return (<AppBarMenu actions={this.getActions('menu')}/>)
+            return (<AppBarMenu actions={this.getActions('header-dropdown')}/>)
         };
 
         const Header = () => {
+            const headerStyles = {
+                'position': 'fixed',
+                'top': 0
+            };
             return (
                 <AppBar onLeftIconButtonTouchTap={this.toggleDrawer}
                         iconElementRight={<HeaderDropDown/>}
+                        style={headerStyles}
                         title="SC2"/>);
 
         };
 
         const MainView = () => {
-            return this.isBusy() ? this.getView('loading') : this.getView('default')
+            let viewName = this.isBusy() ? 'loading' : 'default';
+            return this.getView(viewName);
         };
 
         const DrawerItem = (props) => {

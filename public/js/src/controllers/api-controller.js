@@ -98,6 +98,7 @@ class APIController extends Controller {
                             resolve(queriedPlayList);
                         } else {
                             const err = new Error(`server responded with: ${res.status}`);
+                            err.code = res.status;
                             console.error(err);
                             reject(err);
                         }
