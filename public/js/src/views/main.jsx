@@ -185,7 +185,7 @@ class MainView extends Component {
 
     onSoundMoved({oldIndex, newIndex}) {
         // TODO probably shouldn't edit activePlayList in state
-        this.state.activePlayList.setSounds(arrayMove(orderedPlaylist.getSounds(), oldIndex, newIndex));
+        this.state.activePlayList.setSounds(arrayMove(this.state.activePlayList.getSounds(), oldIndex, newIndex));
         this.setPlayList(this.state.activePlayList);
         this.api.updatePlayList(this.state.activePlayList)
             .then(() => {

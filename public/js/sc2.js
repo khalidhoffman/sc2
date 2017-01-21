@@ -21634,6 +21634,13 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Store = function () {
+	    _createClass(Store, null, [{
+	        key: 'compare',
+	        value: function compare(preVal, newVal, path) {
+	            return (0, _lodash.get)(newVal, path) == (0, _lodash.get)(preVal, path);
+	        }
+	    }]);
+
 	    function Store() {
 	        var defaultState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -21667,34 +21674,12 @@
 	    }, {
 	        key: 'on',
 	        value: function on(path, callback) {
-	            return this.observable.distinctUntilChanged(function (prev, state) {
-	                return Store.compare(prev, state, path);
-	            }).map(function (state) {
-	                return (0, _lodash.get)(state, path);
-	            }).subscribe({ next: callback });
+	            return this.getObservable(path).subscribe({ next: callback });
 	        }
 	    }, {
 	        key: 'watch',
 	        value: function watch(path, callback) {
-	            return this.observable.distinctUntilChanged(function (prev, state) {
-	                return Store.compare(prev, state, path);
-	            }).subscribe({ next: callback });
-	        }
-	    }, {
-	        key: 'listenTo',
-	        value: function listenTo(path, options, callback) {
-	            var filter = void 0;
-	            if (callback) {
-	                filter = function filter(prev, state) {
-	                    return options.filter((0, _lodash.get)(state, path));
-	                };
-	            } else {
-	                callback = options;
-	                filter = function filter(state) {
-	                    return (0, _lodash.get)(state, path);
-	                };
-	            }
-	            this.observable.distinctUntilChanged(filter).subscribe({ next: callback });
+	            return this.getStateObservable(path).subscribe({ next: callback });
 	        }
 	    }, {
 	        key: 'getStateObservable',
@@ -21706,23 +21691,9 @@
 	    }, {
 	        key: 'getObservable',
 	        value: function getObservable(path) {
-	            var reducedObservable = void 0;
-	            if (path) {
-	                reducedObservable = this.observable.distinctUntilChanged(function (prev, state) {
-	                    return Store.compare(prev, state, path);
-	                });
-	            } else {
-	                reducedObservable = this.observable;
-	            }
-
-	            return reducedObservable.map(function (state) {
+	            return this.getStateObservable(path).map(function (state) {
 	                return (0, _lodash.get)(state, path);
 	            });
-	        }
-	    }], [{
-	        key: 'compare',
-	        value: function compare(preVal, newVal, path) {
-	            return (0, _lodash.get)(newVal, path) == (0, _lodash.get)(preVal, path);
 	        }
 	    }]);
 
@@ -72739,7 +72710,7 @@
 	                newIndex = _ref.newIndex;
 
 	            // TODO probably shouldn't edit activePlayList in state
-	            this.state.activePlayList.setSounds((0, _reactSortableHoc.arrayMove)(orderedPlaylist.getSounds(), oldIndex, newIndex));
+	            this.state.activePlayList.setSounds((0, _reactSortableHoc.arrayMove)(this.state.activePlayList.getSounds(), oldIndex, newIndex));
 	            this.setPlayList(this.state.activePlayList);
 	            this.api.updatePlayList(this.state.activePlayList).then(function () {
 	                _this3.notifications.queue('Updated \'' + _this3.state.activePlayList.getTitle() + '\'');

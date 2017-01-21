@@ -9,6 +9,11 @@ import 'rxjs/add/operator/combineLatest';
 
 
 class Store {
+
+    static compare(preVal, newVal, path) {
+        return get(newVal, path) == get(preVal, path);
+    }
+
     constructor(defaultState = {}) {
         this.state = defaultState;
         this.observable = new BehaviorSubject(this.state);
@@ -31,34 +36,12 @@ class Store {
         this.observable.subscribe({next: callback});
     }
 
-    static compare(preVal, newVal, path){
-        return get(newVal, path) == get(preVal, path);
-    }
-
     on(path, callback) {
-        return this.observable
-            .distinctUntilChanged((prev, state) => Store.compare(prev, state, path))
-            .map(state => get(state, path))
-            .subscribe({next: callback})
+        return this.getObservable(path).subscribe({next: callback})
     }
 
     watch(path, callback) {
-        return this.observable
-            .distinctUntilChanged((prev, state) => Store.compare(prev, state, path))
-            .subscribe({next: callback})
-    }
-
-    listenTo(path, options, callback) {
-        let filter;
-        if (callback) {
-            filter = (prev, state) => options.filter(get(state, path))
-        } else {
-            callback = options;
-            filter = state => get(state, path);
-        }
-        this.observable
-            .distinctUntilChanged(filter)
-            .subscribe({next: callback})
+        return this.getStateObservable(path).subscribe({next: callback})
     }
 
     getStateObservable(path) {
@@ -69,16 +52,8 @@ class Store {
             this.observable;
     }
 
-    getObservable(path){
-        let reducedObservable;
-        if (path){
-            reducedObservable = this.observable
-                                   .distinctUntilChanged((prev, state) => Store.compare(prev, state, path))
-        } else {
-            reducedObservable = this.observable;
-        }
-
-        return reducedObservable.map(state => get(state, path));
+    getObservable(path) {
+        return this.getStateObservable(path).map(state => get(state, path));
     }
 }
 
