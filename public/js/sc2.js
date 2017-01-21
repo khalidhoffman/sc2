@@ -72380,7 +72380,7 @@
 
 	        var _this = _possibleConstructorReturn(this, (UIController.__proto__ || Object.getPrototypeOf(UIController)).apply(this, arguments));
 
-	        var scopedMethods = ['onSearch'];
+	        var scopedMethods = ['onSearch', 'getActions'];
 	        var _iteratorNormalCompletion = true;
 	        var _didIteratorError = false;
 	        var _iteratorError = undefined;
@@ -72426,6 +72426,33 @@
 	                }).catch(function () {
 	                    _this2.notifications.queue('Could not find \'' + searchText + '\'');
 	                });
+	            }
+	        }
+
+	        /**
+	         *
+	         * @param {String} namespace
+	         */
+
+	    }, {
+	        key: 'getActions',
+	        value: function getActions(namespace) {
+	            switch (namespace) {
+	                case 'header-dropdown':
+	                case 'menu':
+	                    return [{
+	                        label: 'Help',
+	                        callback: this.router.showHelp
+	                    }, {
+	                        label: 'Refresh',
+	                        callback: this.router.refresh
+	                    }, {
+	                        label: this.api.isLoggedIn() ? 'Sign Out' : 'Sign In',
+	                        callback: this.api.isLoggedIn() ? this.router.logout : this.router.login
+	                    }];
+
+	                default:
+	                    return [];
 	            }
 	        }
 	    }]);
@@ -72535,7 +72562,7 @@
 	        var scopedMethods = [
 
 	        // synchronous
-	        'filterVisibleSongs', 'getActions', 'getView', 'isBusy',
+	        'filterVisibleSongs', 'getView', 'isBusy',
 
 	        // actions
 	        'setPlayList', 'showLoading', 'hideLoading', 'toggleDrawer',
@@ -72616,33 +72643,6 @@
 	                _this2.hideLoading();
 	                _this2.notifications.queue('Please sign in', err);
 	            });
-	        }
-
-	        /**
-	         *
-	         * @param {String} namespace
-	         */
-
-	    }, {
-	        key: 'getActions',
-	        value: function getActions(namespace) {
-	            switch (namespace) {
-	                case 'header-dropdown':
-	                case 'menu':
-	                    return [{
-	                        label: 'Help',
-	                        callback: this.router.showHelp
-	                    }, {
-	                        label: 'Refresh',
-	                        callback: this.router.refresh
-	                    }, {
-	                        label: this.api.isLoggedIn() ? 'Sign Out' : 'Sign In',
-	                        callback: this.api.isLoggedIn() ? this.router.logout : this.router.login
-	                    }];
-
-	                default:
-	                    return [];
-	            }
 	        }
 
 	        /**
@@ -72798,7 +72798,7 @@
 	            var _this4 = this;
 
 	            var HeaderDropDown = function HeaderDropDown() {
-	                return _react2.default.createElement(_appBarMenu2.default, { actions: _this4.getActions('header-dropdown') });
+	                return _react2.default.createElement(_appBarMenu2.default, { actions: _this4.ui.getActions('header-dropdown') });
 	            };
 
 	            var Header = function Header() {

@@ -43,7 +43,6 @@ class MainView extends Component {
 
             // synchronous
             'filterVisibleSongs',
-            'getActions',
             'getView',
             'isBusy',
 
@@ -110,34 +109,6 @@ class MainView extends Component {
                 this.hideLoading();
                 this.notifications.queue('Please sign in', err);
             });
-    }
-
-    /**
-     *
-     * @param {String} namespace
-     */
-    getActions(namespace) {
-        switch (namespace) {
-            case 'header-dropdown':
-            case 'menu':
-                return [
-                    {
-                        label: 'Help',
-                        callback: this.router.showHelp
-                    },
-                    {
-                        label: 'Refresh',
-                        callback: this.router.refresh
-                    },
-                    {
-                        label: (this.api.isLoggedIn()) ? 'Sign Out' : 'Sign In',
-                        callback: (this.api.isLoggedIn()) ? this.router.logout : this.router.login
-                    }
-                ];
-
-            default:
-                return [];
-        }
     }
 
     /**
@@ -261,7 +232,7 @@ class MainView extends Component {
     render() {
 
         const HeaderDropDown = () => {
-            return (<AppBarMenu actions={this.getActions('header-dropdown')}/>)
+            return (<AppBarMenu actions={this.ui.getActions('header-dropdown')}/>)
         };
 
         const Header = () => {

@@ -5,7 +5,8 @@ class UIController extends Controller {
         super(...arguments);
 
         const scopedMethods = [
-            'onSearch'
+            'onSearch',
+            'getActions'
         ];
         for (const method of scopedMethods) {
             this[method] = this[method].bind(this);
@@ -27,6 +28,34 @@ class UIController extends Controller {
                 .catch(() => {
                     this.notifications.queue(`Could not find '${searchText}'`);
                 })
+        }
+    }
+
+    /**
+     *
+     * @param {String} namespace
+     */
+    getActions(namespace) {
+        switch (namespace) {
+            case 'header-dropdown':
+            case 'menu':
+                return [
+                    {
+                        label: 'Help',
+                        callback: this.router.showHelp
+                    },
+                    {
+                        label: 'Refresh',
+                        callback: this.router.refresh
+                    },
+                    {
+                        label: (this.api.isLoggedIn()) ? 'Sign Out' : 'Sign In',
+                        callback: (this.api.isLoggedIn()) ? this.router.logout : this.router.login
+                    }
+                ];
+
+            default:
+                return [];
         }
     }
 }
