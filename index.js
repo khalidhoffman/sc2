@@ -1,31 +1,36 @@
-const path = require('path'),
-    http = require('http'),
+const path = require('path');
+const http = require('http');
 
-    express = require('express'),
-    logger = require('morgan'),
-    cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser'),
-    session = require('express-session'),
-    passport = require('passport'),
+const express = require('express');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const passport = require('passport');
 
-    Router = require('./router'),
-    config = require('./config'),
+const Router = require('./router');
+const config = require('./config');
 
-    // middleware
-    soundcloudPassport = require('./middleware/auth-passport-soundcloud'),
-    onError = require('./middleware/on-error'),
-    on404 = require('./middleware/on-404');
+ // middleware
+const soundcloudPassport = require('./middleware/auth-passport-soundcloud');
+const onError = require('./middleware/on-error');
+const on404 = require('./middleware/on-404');
 
 class SoundCloudServer {
 
-    constructor(childApp) {
-        this.app = childApp || express();
+    /**
+     *
+     * @param {express} [parentApp] an express that SC2 will build on
+     * @param {AppRouter} [router]
+     */
+    constructor(parentApp, router) {
+        this.app = parentApp || express();
         this.passport = passport;
-        this.router = new Router();
-        this.init();
+        this.router = router || new Router();
+        this._init();
     }
 
-    init() {
+    _init() {
         this.app.set('port', parseInt(config.PORT));
         this.app.set('env', 'development');
 
@@ -57,6 +62,10 @@ class SoundCloudServer {
         this.app.use(onError());
     }
 
+    /**
+     *
+     * @returns {http.Server|Server|Function}
+     */
     toNativeServer() {
         return http.createServer(this.app);
     }

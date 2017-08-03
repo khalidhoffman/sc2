@@ -1,18 +1,15 @@
-const path = require('path'),
+const fs = require('fs'),
+    path = require('path'),
+    Mocha = require('mocha'),
 
-    Jasmine = require('jasmine'),
-    SpecReporter = require('jasmine-spec-reporter');
+    mocha = new Mocha({ui: 'bdd'}),
+    testDir = path.join(process.cwd(), 'test/'),
+    testDirFiles = fs.readdirSync(testDir).filter(file => {
+        return file.match(/-spec.js$/);
+    });
 
-let jasmine = new Jasmine();
+testDirFiles.forEach(file => {
+    mocha.addFile(path.join(testDir, file));
+});
 
-jasmine.loadConfigFile(path.join(process.cwd(), "spec/support/jasmine.json"));
-
-jasmine.env.clearReporters();
-// jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL =  24 * 60 * 60 * 1000;
-jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
-
-jasmine.addReporter(new SpecReporter({
-    displayStacktrace: true
-}));
-
-jasmine.execute();
+mocha.run();

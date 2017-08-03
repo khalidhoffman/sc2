@@ -1,44 +1,39 @@
-const path = require('path'),
-    url = require('url'),
-    fs = require('fs'),
+const path = require('path');
 
-    jsOutputDir = path.join(process.cwd(), '/public/js/'),
-    jsSrcDir = path.join(process.cwd(), '/public/js/src/'),
-    npmDir = path.join(process.cwd(), '/node_modules/'),
-    webpack = require('webpack');
+const webpack = require('webpack');
+
+const jsOutputDir = path.join(__dirname, '../dist');
+const jsSrcDir = __dirname;
+const npmDir = path.join(__dirname, '../../../node_modules');
+const portNum = 4445;
 
 module.exports = {
-    entry: ["app.js"],
-    context : __dirname,
+    context: __dirname,
+    entry: {
+        app: 'render'
+    },
     output: {
         path: jsOutputDir,
-        filename: "sc2.js"
+        publicPath: `http://localhost:${portNum}/js/dist`,
+        filename: "sc2.[name].js"
     },
     module: {
         loaders: [
             {
                 //tell webpack to use jsx-loader for all *.jsx files
                 test: /\.jsx?$/,
-                loaders: ['babel-loader?presets[]=es2015,presets[]=react'],
+                loaders: ['babel-loader?presets[]=es2017,presets[]=react'],
                 include: [jsSrcDir]
             },
         ]
     },
     resolve: {
-        root: jsSrcDir,
-        modulesDirectories: [jsSrcDir, npmDir],
-        extensions: ['', '.js', '.jsx'],
+        modules: [jsSrcDir, npmDir],
+        extensions: ['.js', '.jsx'],
         alias: {
-            //"soundcloud": path.join(nodejsDir, '/soundcloud/'),
-            //"debuggable": path.join(nodejsDir, '/debuggable/'),
-            "livejs": "vendor/LiveJS/livejs"
+            "livejs": "vendor/LiveJS/livejs",
+            "app": "app"
         }
-    },
-    resolveLoader: {
-        root: jsSrcDir
-    },
-    shim: {
-        "live": [],
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin({
@@ -47,10 +42,16 @@ module.exports = {
         //         drop_debugger : true
         //     }
         // }),
-        new webpack.ProvidePlugin({
-            React: 'react'
+        new webpack.ProvidePlugin({React: 'react'}),
+        new webpack.DefinePlugin({"global.GENTLY": false}),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks(module) {
+                const context = module.context;
+                return context && context.indexOf('node_modules') >= 0;
+            }
         }),
-        new webpack.DefinePlugin({"global.GENTLY": false})
+        new webpack.HotModuleReplacementPlugin()
     ],
     node: {
         __dirname: true,
@@ -58,5 +59,12 @@ module.exports = {
         fs: "empty",
         path: true,
         url: true
+    },
+    devServer: {
+        publicPath: `http://localhost:${portNum}/js/dist/`,
+        color: true,
+        compress: false,
+        port: portNum,
+        hot: true
     }
 };

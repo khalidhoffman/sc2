@@ -16,14 +16,17 @@
       "input": "public/js/src/webpack.config.js"
     },
     {
-      "name" : "stylus-bem",
+      "name" : "stylus",
       "input": "public/stylesheets/",
-      "output": "public/stylesheets/"
+      "output": "public/stylesheets/",
+      "options": {
+        "koutoSwiss": true
+      }
     },
     {
       "name": "css",
-      "input": "stylesheets/",
-      "output": "stylesheets/"
+      "input": "public/stylesheets/",
+      "output": "public/stylesheets/"
     }
   ]
 }

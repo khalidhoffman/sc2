@@ -1,5 +1,5 @@
-const express = require('express'),
-    passport = require('passport');
+const express = require('express');
+const passport = require('passport');
 
 class Router {
     constructor(authController) {
@@ -8,4 +8,5 @@ class Router {
         this.passport = passport;
     }
 }
+
 module.exports = Router;

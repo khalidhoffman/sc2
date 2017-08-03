@@ -1,28 +1,15 @@
-const path = require('path'),
+const express = require('express');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
 
-    webpack = require('webpack'),
-    WebpackServer = require('webpack-dev-server'),
+const app = express();
+const config = require('../public/js/src/webpack.config.js');
+const compiler = webpack(config);
 
-    SoundCloudServer = require('../'),
+// Tell express to use the webpack-dev-middleware and use the webpack.config.js
+// configuration file as a base.
+app.use(webpackDevMiddleware(compiler, config.devServer));
 
-    config = require('../config'),
-    webpackConfig = require('../public/js/src/webpack.config');
-
-webpackConfig.entry.unshift('webpack-dev-server/client?http://localhost:4444/', 'webpack/hot/only-dev-server');
-
-const server = new WebpackServer(webpack(webpackConfig), {
-    quiet: false,
-    noInfo: false,
-    contentBase: config.PUBLIC_URL,
-    hot: true,
-    filename: path.join(process.cwd(), '/public/js/app.js'),
-    setup: function (app) {
-        return new SoundCloudServer(app).toNativeServer();
-    },
-    publicPath: "/public/js/app/src/",
-    stats: {colors: true}
-});
-
-server.listen(config.PORT, config.DOMAIN, () => {
-    console.log(`webpack is listening to ${config.DOMAIN}:${config.PORT}`);
+app.listen(config.devServer.port, function () {
+    console.log(`listening on port ${config.devServer.port}\n`);
 });

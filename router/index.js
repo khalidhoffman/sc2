@@ -12,4 +12,5 @@ class AppRouter {
         this.API = new APIRouter(this.authController, this.soundCloudController);
     }
 }
+
 module.exports = AppRouter;

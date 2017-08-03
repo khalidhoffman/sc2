@@ -73,6 +73,6 @@ export default class Notification extends React.Component {
     }
 
     render() {
-        return (<Snackbar open={this.state.isVisible} message={this.state.text} />);
+        return (<Snackbar open={this.state.isVisible} message={this.state.text}/>);
     }
 }

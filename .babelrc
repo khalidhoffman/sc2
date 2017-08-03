@@ -1,14 +1,19 @@
 {
   "presets": [
+    "react",
     "es2015",
-    "react"
+    "es2017"
   ],
   "plugins": [
-    ["module-resolver", {
-      "root": [
-        "./",
-        "./public/js/src"
-      ]
-    }]
+    [
+      "transform-class-properties",
+      "module-resolver",
+      {
+        "root": [
+          "./",
+          "./public/js/src"
+        ]
+      }
+    ]
   ]
 }

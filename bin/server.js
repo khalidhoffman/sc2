@@ -1,11 +1,9 @@
 #!/usr/bin/env node
-const debug = require('debug')('soundcloud:server'),
+const SoundCloudServer = require('../');
 
-    SoundCloudServer = require('../'),
-
-    soundCloudServer = new SoundCloudServer(),
-    port = soundCloudServer.get('port'),
-    server = soundCloudServer.toNativeServer();
+const soundCloudServer = new SoundCloudServer();
+const port = soundCloudServer.get('port');
+const server = soundCloudServer.toNativeServer();
 
 /**
  * Listen on provided port, on all network interfaces.

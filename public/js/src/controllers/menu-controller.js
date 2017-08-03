@@ -1,33 +1,25 @@
 import Controller from './base-controller';
 
 class UIController extends Controller {
-    constructor(){
+    constructor() {
         super(...arguments);
-
-        const scopedMethods = [
-            'onSearch',
-            'getActions'
-        ];
-        for (const method of scopedMethods) {
-            this[method] = this[method].bind(this);
-        }
     }
 
-    onSearch(searchText) {
+    onSearch = (searchText) => {
         this.store.setState({
             searchText: searchText
         });
         if (searchText) {
-            this.api.fetchPlayList(searchText)
-                .then(playLists => {
-                    if (!playLists[0]) return Promise.reject();
+            this.api.fetchPlaylist(searchText)
+                .then(playlists => {
+                    if (!playlists[0]) return Promise.reject();
                     this.setState({
-                        activePlayList: playLists[0]
-                    })
+                        activePlaylist: playlists[0]
+                    });
                 })
                 .catch(() => {
                     this.notifications.queue(`Could not find '${searchText}'`);
-                })
+                });
         }
     }
 
@@ -35,7 +27,7 @@ class UIController extends Controller {
      *
      * @param {String} namespace
      */
-    getActions(namespace) {
+    getActions = (namespace) => {
         switch (namespace) {
             case 'header-dropdown':
             case 'menu':
@@ -58,6 +50,17 @@ class UIController extends Controller {
                 return [];
         }
     }
+
+
+    toggleDrawer = () => {
+        this.store.setState({
+            isDrawerOpen: !this.store.get('isDrawerOpen')
+        });
+    }
+
+    isDrawerOpen = () => {
+        return this.store.get('isDrawerOpen');
+    }
 }
 
-module.exports = UIController;
+export default UIController;

@@ -1,14 +1,16 @@
-var url = require('url'),
+const passport = require('passport');
 
-    passport = require('passport'),
+const config = require('../config');
 
-    SoundCloudStrategy = require('passport-soundcloud').Strategy,
-
-    config = require('../config');
+const SoundCloudStrategy = require('passport-soundcloud').Strategy;
+const soundCloudStrategyParams = {
+    clientID: config.SOUNDCLOUD_CLIENT_ID,
+    clientSecret: config.SOUNDCLOUD_CLIENT_SECRET,
+    callbackURL: config.PUBLIC_URL
+};
 
 
 module.exports = function () {
-    const callbackURL = config.PUBLIC_URL;
 
     passport.serializeUser(function (user, done) {
         done(null, user);
@@ -18,11 +20,7 @@ module.exports = function () {
         done(null, obj);
     });
 
-    return new SoundCloudStrategy({
-        clientID: config.SOUNDCLOUD_CLIENT_ID,
-        clientSecret: config.SOUNDCLOUD_CLIENT_SECRET,
-        callbackURL: callbackURL
-    }, function (accessToken, refreshToken, profile, done) {
+    return new SoundCloudStrategy(soundCloudStrategyParams, function (accessToken, refreshToken, profile, done) {
         return done(null, Object.assign({accessToken}, profile));
     });
 };

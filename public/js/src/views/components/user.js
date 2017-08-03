@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default class UserView extends React.Component{
+export default class UserView extends React.Component {
 
-    render(){
+    render() {
         return (
             <div>
 

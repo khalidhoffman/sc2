@@ -1,33 +1,35 @@
 import React from 'react';
 import Hammer from 'hammerjs';
-
+import {Sound as SCSound} from 'soundcloud-lib';
 import {SortableElement} from 'react-sortable-hoc';
+import PropTypes from 'prop-types';
+import {instance as app} from 'app';
 
-class Sound extends React.Component {
-    static get defaultProps() {
-        return {
-            artwork: 'https://placehold.it/500x500'
-        }
-    };
+class Sound extends React.PureComponent {
 
     constructor(props) {
         super(props);
-
-        const scopedMethods = [
-            'onPan',
-            'onBindNode'
-        ];
-        for (const method of scopedMethods) {
-            this[method] = this[method].bind(this);
-        }
     }
 
-    onPan(evt) {
+    static get defaultProps() {
+        return {
+            artwork: 'https://placehold.it/500x500'
+        };
+    }
+
+    static get propTypes() {
+        return {
+            artwork: PropTypes.string,
+            sound: PropTypes.instanceOf(SCSound)
+        };
+    }
+
+    onPan = (evt) => {
         if (!this.el) return;
         this.el.style = `z-index:100; transform: translate3d(${evt.deltaX}px, ${evt.deltaY}px, 0)`;
     }
 
-    onBindNode(node) {
+    onBindNode = (node) => {
         if (!node) return;
         this.el = node;
         this.hammer = new Hammer(this.el);
@@ -38,17 +40,26 @@ class Sound extends React.Component {
         if (this.hammer) this.hammer.destroy();
     }
 
+    onClick = (proxyEvt, evt) => {
+        this.props.onClick(this.props.sound, evt);
+    }
+
     render() {
-        const ArtWork = <div className='sound__artwork'
-                 style={{backgroundImage: `url('${this.props.sound.get('artwork_url') || this.props.artwork}'`}}/>;
+        const artWorkProps = {
+            className: 'sound__artwork',
+            style: {
+                backgroundImage: `url('${this.props.sound.get('artwork_url') || this.props.artwork}'`
+            }
+        };
+
         return (
-            <div className="sound" ref={this.onBindNode}>
-                {ArtWork}
+            <div className="sound" ref={this.onBindNode} onClick={this.onClick}>
+                <div {...artWorkProps}/>
                 <span className="sound__title">{this.props.sound.getTitle()}</span>
-            </div>)
+            </div>);
     }
 }
 
-export const SortableSound = SortableElement((props) => (<Sound sound={props.sound}/>));
+export const SortableSound = SortableElement(props => (<Sound {...props}/>));
 
 export default Sound;

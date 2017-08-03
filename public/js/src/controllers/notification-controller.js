@@ -10,30 +10,20 @@ class NotificationController extends Controller {
             messages: [],
             intervalEmitter: null
         };
-
-        const scopedMethods = [
-            'queue',
-            'onUnread',
-            'dismissOldest',
-            'dismissAll'
-        ];
-        for (const method of scopedMethods) {
-            this[method] = this[method].bind(this);
-        }
     }
 
-    queue(text) {
+    queue = (text) => {
         const messages = this.store.get('messages').concat([text]);
         this.store.setState({messages});
     }
 
-    dismissOldest() {
+    dismissOldest = () => {
         this.store.setState({
             messages: this.store.get('messages').slice(1)
         });
     }
 
-    dismissAll() {
+    dismissAll = () => {
         this.store.setState({
             messages: []
         });
@@ -48,7 +38,7 @@ class NotificationController extends Controller {
         }
     }
 
-    onUnread(callback) {
+    onUnread = (callback) => {
         return this.store.getObservable('messages')
             .mergeMap(messages => {
                 this.state.messages = messages;
@@ -62,8 +52,8 @@ class NotificationController extends Controller {
                     this.onNotificationTick();
                 });
             })
-            .subscribe(callback)
+            .subscribe(callback);
     }
 }
 
-module.exports = NotificationController;
+export default NotificationController;

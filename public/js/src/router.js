@@ -4,7 +4,7 @@ class Router {
         location.href = path;
     }
 
-    refresh(){
+    refresh() {
         location.reload();
     }
 
@@ -13,11 +13,11 @@ class Router {
     }
 
     login() {
-        location.href = '/login'
+        location.href = '/login';
     }
 
     logout() {
-        location.href = '/logout'
+        location.href = '/logout';
     }
 }
 
