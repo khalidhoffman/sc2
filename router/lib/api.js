@@ -9,8 +9,6 @@ class APIRouter extends Router {
 
     toExpress() {
 
-        this.router.get('/auth/soundcloud/success', this.auth.onAuth, this.auth.onAuthSuccess);
-
         this.router.get('/user', this.auth.verify, this.soundcloud.getUserMeta);
 
         this.router.get('/stream', this.auth.verify, this.soundcloud.fetchStream);
