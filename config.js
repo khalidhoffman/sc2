@@ -1,8 +1,14 @@
-const fs = require('fs'),
-    path = require('path'),
+const fs = require('fs');
+const path = require('path');
 
-    localEnvJSONPath = path.join(process.cwd(), './.env.json'),
-    local = JSON.parse(fs.readFileSync(localEnvJSONPath, 'utf8'));
+const localEnvJSONPath = path.join(process.cwd(), './.env.json');
+const local = (function () {
+    try {
+        return JSON.parse(fs.readFileSync(localEnvJSONPath, 'utf8'));
+    } catch (err) {
+        return {};
+    }
+})();
 
 module.exports = {
     DOMAIN: process.env.DOMAIN || local.DOMAIN,
